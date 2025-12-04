@@ -11,6 +11,8 @@
 #include <zephyr/drivers/i2c.h>
 #include <zephyr/sys/util.h>
 
+#define DT_DRV_COMPAT nxp_pcf857x
+
 struct pcf857x_cfg {
 	struct i2c_dt_spec bus;
 	uint8_t ngpios;
@@ -133,7 +135,8 @@ static int pcf857x_pin_configure(const struct device *dev, gpio_pin_t pin, gpio_
 	/* No support for push-pull vs open-drain per pin; it's quasi-bidirectional.
 	 * Ignore pull-up/down flags, the chip uses internal pull-ups.
 	 */
-	if ((flags & GPIO_SINGLE_ENDED) && !(flags & GPIO_OPEN_DRAIN)) {
+	if ((flags & GPIO_SINGLE_ENDED) != 0U &&
+		(flags & GPIO_OPEN_DRAIN) == 0U) {
 		return -ENOTSUP;
 	}
 
@@ -157,24 +160,6 @@ static int pcf857x_pin_configure(const struct device *dev, gpio_pin_t pin, gpio_
 	k_mutex_unlock(&data->lock);
 
 	return ret;
-}
-
-static int pcf857x_pin_get_raw(const struct device *dev, gpio_pin_t pin)
-{
-	const struct pcf857x_cfg *cfg = dev->config;
-	gpio_port_value_t v;
-	int ret;
-
-	if (pin >= cfg->ngpios) {
-		return -EINVAL;
-	}
-
-	ret = pcf857x_port_get_raw(dev, &v);
-	if (ret < 0) {
-		return ret;
-	}
-
-	return (v & BIT(pin)) ? 1 : 0;
 }
 
 static int pcf857x_init(const struct device *dev)
@@ -201,14 +186,15 @@ static int pcf857x_init(const struct device *dev)
 }
 
 static const struct gpio_driver_api pcf857x_api = {
-	.pin_configure = pcf857x_pin_configure,
-	.port_get_raw = pcf857x_port_get_raw,
-	.port_set_masked_raw = pcf857x_port_set_masked_raw,
-	.port_set_bits_raw = pcf857x_port_set_bits_raw,
-	.port_clear_bits_raw = pcf857x_port_clear_bits_raw,
-	.port_toggle_bits = pcf857x_port_toggle_bits,
-	.pin_get_raw = pcf857x_pin_get_raw,
+    .pin_configure       = pcf857x_pin_configure,
+    .port_get_raw        = pcf857x_port_get_raw,
+    .port_set_masked_raw = pcf857x_port_set_masked_raw,
+    .port_set_bits_raw   = pcf857x_port_set_bits_raw,
+    .port_clear_bits_raw = pcf857x_port_clear_bits_raw,
+    .port_toggle_bits    = pcf857x_port_toggle_bits,
+    /* no pin_get_raw member in this Zephyr version */
 };
+
 
 #define PCF857X_INIT(inst)                                                                         \
 	static struct pcf857x_data pcf857x_data_##inst;                                            \
