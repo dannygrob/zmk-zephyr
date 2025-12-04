@@ -12,6 +12,7 @@
 #include <zephyr/sys/util.h>
 
 #define DT_DRV_COMPAT nxp_pcf857x
+#define PCF857X_INIT_PRIORITY 80
 
 struct pcf857x_cfg {
 	struct i2c_dt_spec bus;
@@ -205,6 +206,6 @@ static const struct gpio_driver_api pcf857x_api = {
 	};                                                                                         \
                                                                                                    \
 	DEVICE_DT_INST_DEFINE(inst, pcf857x_init, NULL, &pcf857x_data_##inst, &pcf857x_cfg_##inst, \
-			      POST_KERNEL, CONFIG_GPIO_INIT_PRIORITY, &pcf857x_api);
+			      POST_KERNEL, PCF857X_INIT_PRIORITY, &pcf857x_api);
 
 DT_INST_FOREACH_STATUS_OKAY(PCF857X_INIT);
