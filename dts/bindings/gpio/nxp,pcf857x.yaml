@@ -1,0 +1,19 @@
+# Copyright (c) 2022 ithinx GmbH
+# SPDX-License-Identifier: Apache-2.0
+
+description: NXP PCF857x I2C-based GPIO expander (PCF8574 / PCF8575)
+
+compatible: "nxp,pcf857x"
+
+include:
+  - name: gpio-controller.yaml
+  - name: i2c-device.yaml
+
+properties:
+  ngpios:
+    type: int
+    required: true
+    enum:
+      - 8
+      - 16
+    description: Number of GPIOs provided by the expander

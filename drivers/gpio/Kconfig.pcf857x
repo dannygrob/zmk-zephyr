@@ -1,0 +1,6 @@
+config GPIO_PCF857X
+    bool "NXP PCF857x I2C GPIO expander"
+    depends on GPIO && I2C
+    help
+      Enable support for the NXP PCF857x family of I2C-based GPIO expanders,
+      such as the 8-bit PCF8574 and 16-bit PCF8575.
