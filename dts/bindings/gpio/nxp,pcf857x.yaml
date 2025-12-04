@@ -5,16 +5,9 @@ description: NXP PCF857x I2C-based GPIO expander (PCF8574 / PCF8575)
 
 compatible: "nxp,pcf857x"
 
-include:
-  - name: gpio-controller.yaml
-  - name: i2c-device.yaml
+include: [i2c-device.yaml, gpio-controller.yaml]
 
 properties:
-  gpio-controller:
-    type: boolean
-    required: true
-    description: This device is a GPIO controller.
-
   ngpios:
     type: int
     required: true
@@ -22,3 +15,15 @@ properties:
       - 8
       - 16
     description: Number of GPIOs provided by the expander
+
+  int-gpios:
+    type: phandle-array
+    description: |
+      GPIO connected to the controller INT pin. This pin is active-low.
+
+  "#gpio-cells":
+    const: 2
+
+gpio-cells:
+  - pin
+  - flags
