@@ -10,6 +10,11 @@ include:
   - name: i2c-device.yaml
 
 properties:
+  gpio-controller:
+    type: boolean
+    required: true
+    description: This device is a GPIO controller.
+
   ngpios:
     type: int
     required: true
